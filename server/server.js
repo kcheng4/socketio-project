@@ -21,13 +21,28 @@ io.on('connection', (socket) => {
   //   text:"slam it down someee",
   //   createdAt:123
   // });
+  socket.emit('newMessage', {
+    from:'admin',
+    text:'Welcs'
+  });
+
+  socket.broadcast.emit('newMessage',{
+    from:'admin',
+    text:'New user joined',
+    createdAt:new Date().getTime()
+  });
 
   socket.on('createMessage',(data) => {
     console.log(data);
-    io.emit('newMessage',{
-      from:data.from,
-      text:data.text,
-      createdAt:new Date().getTime()
+    // io.emit('newMessage',{
+    //   from:data.from,
+    //   text:data.text,
+    //   createdAt:new Date().getTime()
+    // });
+    socket.broadcast.emit('newMessage',{
+      from: data.from,
+      text: data.text,
+      createdAt: new Date().getTime()
     });
   });
 

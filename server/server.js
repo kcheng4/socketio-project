@@ -24,16 +24,17 @@ io.on('connection', (socket) => {
   // });
   socket.emit('newMessage', generateMessage('Admin', 'Welcome to chat'));
 
-  socket.broadcast.emit('newMessage', generateMessage('Admin', 'Welcome to chat'));
+  socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'));
 
-  socket.on('createMessage',(data) => {
+  socket.on('createMessage',(data, callback) => {
     console.log(data);
     // io.emit('newMessage',{
     //   from:data.from,
     //   text:data.text,
     //   createdAt:new Date().getTime()
     // });
-    socket.broadcast.emit('newMessage', generateMessage(data.from,data.text));
+    io.emit('newMessage', generateMessage(data.from,data.text));
+    callback('This is from the server');
   });
 
   socket.on('disconnect',() => {

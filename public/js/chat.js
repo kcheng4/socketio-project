@@ -22,16 +22,38 @@ function scrollToBottom() {
   }
 }
 socket.on('connect',function() {
-  console.log('Connected to server');
+  var params = jQuery.deparam(window.location.search);
 
-  // socket.emit('createMessage',{
-  //   from:"Andrew",
-  //   text:"Suck a dick"
-  // });
+  socket.emit('join', params, function(error){
+    if(error){
+      alert(error);
+      window.location.href = '/index.html';
+    }
+    else {
+      console.log('No error');
+    }
+  });
+  console.log('Connected to server');
 });
 
 socket.on('disconnect',function() {
   console.log('Disconnected from server');
+  var user = users.removeUser(socket.id);
+
+  if (user){
+    io.to(user.room).emit('updateUserList', users.getUserList(user.room));
+    io.to(user.room).emit('newMessage', generateMessage('Admin', `${user.name} has left.`));
+  }
+});
+
+socket.on('updateUserList', function(users){
+  console.log('user list', users);
+  var ul = jQuery('<ol></ol>');
+  users.forEach(function(user){
+    ul.append(jQuery('<li></li>').text(user));
+  });
+
+  jQuery('#users').html(ul);
 });
 
 socket.on('newMessage',function(data){

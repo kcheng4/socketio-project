@@ -38,12 +38,6 @@ socket.on('connect',function() {
 
 socket.on('disconnect',function() {
   console.log('Disconnected from server');
-  var user = users.removeUser(socket.id);
-
-  if (user){
-    io.to(user.room).emit('updateUserList', users.getUserList(user.room));
-    io.to(user.room).emit('newMessage', generateMessage('Admin', `${user.name} has left.`));
-  }
 });
 
 socket.on('updateUserList', function(users){
@@ -57,6 +51,7 @@ socket.on('updateUserList', function(users){
 });
 
 socket.on('newMessage',function(data){
+  console.log(data);
   var template = jQuery('#message-template').html();
   var html = Mustache.render(template, {
     text:data.text,
@@ -94,7 +89,6 @@ jQuery('#message-form').on('submit',function(e){
   e.preventDefault();
   var message=jQuery('[name=message]');
   socket.emit('createMessage',{
-    from:'User',
     text: message.val()
   }, function(data){
     message.val('');
